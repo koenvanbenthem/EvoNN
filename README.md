@@ -1,13 +1,14 @@
 # How to install
+Before start, R and Python should be installed correctly. It is recommended to not alter the default settings of the installers.
 
-**Step 1 :Set up R packages**
+**Set up R packages**
 ```r
 install.packages("devtools")
 remotes::install_github("thijsjanzen/treestats")
 remotes::install_github("EvoLandEco/EvoNN")
 ```
 
-**Step 2 :Set up Python libraries**
+**Set up Python libraries**
 
 1. In terminal (use PowerShell in windows), create a python virtual enviroment, subsitute <...> with your own choice:
 ```

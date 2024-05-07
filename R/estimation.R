@@ -127,6 +127,7 @@ check_nn_model <- function(scenario = stop("Scenarios not specified")) {
 }
 
 
+#' @export parameter_estimation
 parameter_estimation <- function(file_path = stop("Tree file path not provided"),
                                  venv_path = stop("Python virtual environment path not provided"),
                                  scenario = "DDD") {

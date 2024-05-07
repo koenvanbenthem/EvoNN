@@ -48,13 +48,7 @@ check_tree_validity <- function(file_path) {
 }
 
 
-write_tree_to_temp <- function(file_path) {
-  require(ape)  # Ensure ape package is loaded
-
-  # Attempt to read the Nexus tree file
-  tree <- ape::read.nexus(file_path)
-  message("Attempting to export the tree to temporary files")
-
+write_tree_to_temp <- function(file_list, success_indexes) {
   # Define the base temporary directory
   temp_dir <- tempdir()
   i <- 1
@@ -83,23 +77,34 @@ write_tree_to_temp <- function(file_path) {
   create_dir(path_ST)
   create_dir(path_BT)
 
-  # Define and save RDS files
-  file_name <- file.path(path, paste0("tree_temp_1.rds"))
-  saveRDS(tree_to_connectivity(tree, undirected = FALSE), file = file_name)
+  # Attempt to read the Nexus tree file
+  for (j in success_indexes) {
+    tree <- ape::read.nexus(file_list[j])
+    tree <- rescale_crown_age(tree, 10)
+    scale <- compute_scale(tree)
 
-  file_name_el <- file.path(path_EL, "EL_temp_1.rds")
-  saveRDS(tree_to_adj_mat(tree), file = file_name_el)
+    tree_name <- basename(file_list[j])
+    tree_name <- tools::file_path_sans_ext(tree_name)
+    message("Attempting to export the tree to temporary files")
+    print(tree_name)
 
-  file_name_st <- file.path(path_ST, "ST_temp_1.rds")
-  saveRDS(tree_to_stats(tree), file = file_name_st)
+    # Define and save RDS files
+    file_name <- file.path(path, paste0("tree_{", tree_name, "}_{", scale, "}.rds"))
+    saveRDS(tree_to_connectivity(tree, undirected = FALSE), file = file_name)
 
-  file_name_bt <- file.path(path_BT, "BT_temp_1.rds")
-  saveRDS(tree_to_brts(tree), file = file_name_bt)
+    file_name_el <- file.path(path_EL, paste0("EL_{", tree_name, "}_{", scale, "}.rds"))
+    saveRDS(tree_to_adj_mat(tree), file = file_name_el)
+
+    file_name_st <- file.path(path_ST, paste0("ST_{", tree_name, "}_{", scale, "}.rds"))
+    saveRDS(tree_to_stats(tree), file = file_name_st)
+
+    file_name_bt <- file.path(path_BT, paste0("BT_{", tree_name, "}_{", scale, "}.rds"))
+    saveRDS(tree_to_brts(tree), file = file_name_bt)
+  }
 
   # Return the index of the folder used
   return(i)
 }
-
 
 
 check_nn_model <- function(scenario = stop("Scenarios not specified")) {
@@ -141,6 +146,14 @@ check_nn_model <- function(scenario = stop("Scenarios not specified")) {
 }
 
 
+compute_scale <- function(tree) {
+  current_age <- treestats::crown_age(tree)
+  scale <- current_age / 10
+
+  return(scale)
+}
+
+
 #' @export parameter_estimation
 parameter_estimation <- function(file_path = stop("Tree file path not provided"),
                                  venv_path = stop("Python virtual environment path not provided"),
@@ -166,11 +179,8 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
     }
   }
 
-  unique_i <- 0
-
-  for (i in success_indexes) {
-    unique_i <- write_tree_to_temp(file_list[i])
-  }
+  unique_i <- write_tree_to_temp(file_list, success_indexes)
+  print(unique_i)
 
   message("Tree exported")
   check_nn_model(scenario)
@@ -187,6 +197,7 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   reticulate::py_run_file(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
 
   out <- readRDS(file.path(tempdir(), paste0("empirical_gnn_2_lstm_result_", tolower(scenario), ".rds")))
+  out$scale <- NULL
 
   message("Result retrieved")
 

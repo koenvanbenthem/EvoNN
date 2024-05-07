@@ -2,6 +2,7 @@ print(sys.argv[0])
 print(sys.argv[1])
 print(sys.argv[2])
 
+import re
 import os
 import pandas as pd
 import pyreadr
@@ -46,37 +47,31 @@ def check_same_across_rows(df):
 
 
 def count_rds_files(path):
-    # Get the list of .rds files in the specified path
     rds_files = glob.glob(os.path.join(path, '*.rds'))
     return len(rds_files)
 
 
 def check_rds_files_count(tree_path, el_path, st_path, bt_path):
-    # Count the number of .rds files in all four paths
     tree_count = count_rds_files(tree_path)
     el_count = count_rds_files(el_path)
     st_count = count_rds_files(st_path)
-    bt_count = count_rds_files(bt_path)  # Count for the new bt_path
+    bt_count = count_rds_files(bt_path)
 
-    # Check if the counts are equal
     if tree_count == el_count == st_count == bt_count:
-        return tree_count  # Assuming all counts are equal, return one of them
+        return tree_count
     else:
         raise ValueError("The number of .rds files in the four paths are not equal")
 
 
 def list_subdirectories(path):
     try:
-        # Ensure the given path exists and it's a directory
         if not os.path.exists(path):
             raise FileNotFoundError(f"The path {path} does not exist.")
         if not os.path.isdir(path):
             raise NotADirectoryError(f"The path {path} is not a directory.")
 
-        # List all entries in the directory
         entries = os.listdir(path)
 
-        # Filter out entries that are directories
         subdirectories = [entry for entry in entries if os.path.isdir(os.path.join(path, entry))]
 
         return subdirectories
@@ -87,19 +82,32 @@ def list_subdirectories(path):
 
 
 def get_params_string(filename):
-    # Function to extract parameters from the filename
-    params = filename.split('_')[1:-1]  # Exclude the first and last elements
-    return "_".join(params)
+    if filename.endswith('.rds'):
+        filename = filename[:-4]
+
+    match = re.search(r"_\{([^}]*)\}_\{([^}]*)\}", filename)
+    if match:
+        param_string = '_'.join(match.groups())
+    else:
+        param_string = 'No valid pattern found'
+
+    return param_string
 
 
 def get_params(filename):
-    name, _ = filename.rsplit('.', 1)  # Split at the last dot to separate the extension
-    params = name.split('_')[1:]
-    return params
+    if filename.endswith('.rds'):
+        filename = filename[:-4]
+
+    match = re.search(r"_\{([^}]*)\}_\{([^}]*)\}", filename)
+    if match:
+        params_list = list(match.groups())
+    else:
+        params_list = ['No valid pattern found']
+
+    return params_list
 
 
 def check_params_consistency(params_tree_list, params_el_list, params_st_list, params_bt_list):
-    # Check if all corresponding elements in the four lists are equal
     is_consistent = all(
         a == b == c == d for a, b, c, d in zip(params_tree_list, params_el_list, params_st_list, params_bt_list))
 
@@ -112,16 +120,12 @@ def check_params_consistency(params_tree_list, params_el_list, params_st_list, p
 
 
 def check_file_consistency(files_tree, files_el, files_st, files_bt):
-    # Check if the four lists have the same length
     if not (len(files_tree) == len(files_el) == len(files_st) == len(files_bt)):
         raise ValueError("Mismatched lengths among file lists.")
 
-    # Define a function to extract parameters from filename
     def get_params_tuple(filename):
-        # Extract the parameters as strings, not floats
         return tuple(filename.split('_')[1:-1])
 
-    # Check each quartet of files for matching parameters
     for tree_file, el_file, st_file, bt_file in zip(files_tree, files_el, files_st, files_bt):
         tree_params = get_params_tuple(tree_file)
         el_params = get_params_tuple(el_file)
@@ -131,19 +135,16 @@ def check_file_consistency(files_tree, files_el, files_st, files_bt):
         if not (tree_params == el_params == st_params == bt_params):
             raise ValueError(f"Mismatched parameters among files: {tree_file}, {el_file}, {st_file}, {bt_file}")
 
-    # If we get here, all checks passed
     print("File lists consistency check passed across tree, EL, ST, and BT datasets.")
 
 
 def check_list_count(count, data_list, length_list, params_list, stats_list, brts_list):
-    # Get the number of elements in each list
     data_count = len(data_list)
     length_count = len(length_list)
     params_count = len(params_list)
     stats_count = len(stats_list)
-    brts_count = len(brts_list)  # Calculate the count for the new brts_list
+    brts_count = len(brts_list)
 
-    # Check if the count matches the number of elements in each list
     if count != data_count:
         raise ValueError(f"Count mismatch: input argument count is {count}, data_list has {data_count} elements.")
 
@@ -156,10 +157,9 @@ def check_list_count(count, data_list, length_list, params_list, stats_list, brt
     if count != stats_count:
         raise ValueError(f"Count mismatch: input argument count is {count}, stats_list has {stats_count} elements.")
 
-    if count != brts_count:  # Check for brts_list
+    if count != brts_count:
         raise ValueError(f"Count mismatch: input argument count is {count}, brts_list has {brts_count} elements.")
 
-    # If all checks pass, print a success message
     print("Count check passed")
 
 
@@ -266,8 +266,8 @@ def read_rds_to_pytorch(path, count, unique_i, normalize=False):
                     stats=stats_tensor,
                     brts=brts_tensor,
                     brts_len=brts_length,
-                    family=params_current[0],
-                    tree=params_current[1])
+                    file_name=params_current[0],
+                    scale=params_current[1])
 
         # Append the Data object to the list
         pytorch_geometric_data_list.append(data)
@@ -504,8 +504,8 @@ def main():
     predictions_before_lstm = torch.tensor([], dtype=torch.float, device=device)
     predictions_after_lstm = torch.tensor([], dtype=torch.float, device=device)
     num_nodes_original = torch.tensor([], dtype=torch.long, device=device)
-    family_name = []
-    tree_name = []
+    file_name = []
+    scale = []
 
     with torch.no_grad():
         model_gnn.eval()
@@ -514,8 +514,9 @@ def main():
             data.to(device)
             predictions, _, _ = model_gnn(data.x, data.adj, data.mask)
             num_nodes_original = torch.cat((num_nodes_original, data.num_nodes), dim=0)
-            family_name.append(data.family)
-            tree_name.append(data.tree)
+            file_name.append(data.file_name[0])
+            new_scale = float(data.scale[0]) if isinstance(data.scale[0], str) else data.scale[0]
+            scale.append(new_scale)
             predictions_before_lstm = torch.cat((predictions_before_lstm, predictions), dim=0)
             lengths_brts = torch.sum(data.brts != 0, dim=1).cpu().tolist()
             brts_cpu = data.brts.cpu()
@@ -530,23 +531,22 @@ def main():
     predictions_after_lstm = predictions_after_lstm.cpu().detach().numpy()
     num_nodes_original = num_nodes_original.cpu().detach().numpy()
 
-    emp_data_dict = {"pred_lambda_before": predictions_before_lstm[:, 0],
-                       "pred_mu_before": predictions_before_lstm[:, 1],
-                       "pred_cap_before": predictions_before_lstm[:, 2],
-                       "pred_lambda_after": predictions_after_lstm[:, 0],
-                       "pred_mu_after": predictions_after_lstm[:, 1],
-                       "pred_cap_after": predictions_after_lstm[:, 2],
-                        "family": family_name,
-                        "tree": tree_name,
+    emp_data_dict = {"pred_lambda": predictions_after_lstm[:, 0],
+                       "pred_mu": predictions_after_lstm[:, 1],
+                       "pred_cap": predictions_after_lstm[:, 2],
+                       "file_name": file_name,
+                       "scale": scale,
                        "num_nodes": num_nodes_original}
 
     # Multiply the cap results by the normalization factor
-    emp_data_dict["pred_cap_before"] *= cap_norm_factor
-    emp_data_dict["pred_cap_after"] *= cap_norm_factor
+    emp_data_dict["pred_cap"] *= cap_norm_factor
 
     # Convert cap predictions to the closest integer
-    emp_data_dict["pred_cap_before"] = emp_data_dict["pred_cap_before"].round()
-    emp_data_dict["pred_cap_after"] = emp_data_dict["pred_cap_after"].round()
+    emp_data_dict["pred_cap"] = emp_data_dict["pred_cap"].round()
+
+    # Rescale the predicted lambda and mu values
+    emp_data_dict["pred_lambda"] = emp_data_dict["pred_lambda"] * emp_data_dict["scale"]
+    emp_data_dict["pred_mu"] = emp_data_dict["pred_mu"] * emp_data_dict["scale"]
 
     emp_data_df = pd.DataFrame(emp_data_dict)
 

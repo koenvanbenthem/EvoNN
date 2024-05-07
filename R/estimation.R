@@ -104,23 +104,37 @@ write_tree_to_temp <- function(file_path) {
 
 check_nn_model <- function(scenario = stop("Scenarios not specified")) {
   if (scenario == "DDD") {
-    if (file.exists(system.file("model/DDD_FREE_TES_model_diffpool_2_gnn.pt", package = "eveGNN"))) {
+    if (file.exists(system.file("model/DDD_FREE_TES_model_diffpool_2_gnn.pt", package = "EvoNN"))) {
       message("Found pre-trained GNN model for DDD")
     } else {
       stop("Missing pre-trained GNN model for DDD")
     }
-    if (file.exists(system.file("model/DDD_FREE_TES_gnn_2_model_lstm.pt", package = "eveGNN"))) {
+    if (file.exists(system.file("model/DDD_FREE_TES_gnn_2_model_lstm.pt", package = "EvoNN"))) {
       message("Found pre-trained LSTM boosting model for DDD")
     } else {
       stop("Missing pre-trained LSTM boosting model for DDD")
     }
-    if (file.exists(system.file("model/ddd_boosting_gnn_lstm.py", package = "eveGNN"))) {
+    if (file.exists(system.file("model/ddd_boosting_gnn_lstm.py", package = "EvoNN"))) {
       message("Found Python script for parameter estimation")
     } else {
       stop("Missing Python script for parameter estimation")
     }
   } else if (scenario == "BD") {
-
+    if (file.exists(system.file("model/BD_FREE_TES_model_diffpool_2_gnn.pt", package = "EvoNN"))) {
+      message("Found pre-trained GNN model for BD")
+    } else {
+      stop("Missing pre-trained GNN model for BD")
+    }
+    if (file.exists(system.file("model/BD_FREE_TES_gnn_2_model_lstm.pt", package = "EvoNN"))) {
+      message("Found pre-trained LSTM boosting model for BD")
+    } else {
+      stop("Missing pre-trained LSTM boosting model for BD")
+    }
+    if (file.exists(system.file("model/bd_boosting_gnn_lstm.py", package = "EvoNN"))) {
+      message("Found Python script for parameter estimation")
+    } else {
+      stop("Missing Python script for parameter estimation")
+    }
   } else {
     stop("Invalid scenario")
   }
@@ -167,10 +181,10 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   message("Estimating parameters")
   reticulate::py_run_string("import sys")
   # Simulating passing arguments
-  system_path <- system.file("model", package = "eveGNN")
+  system_path <- system.file("model", package = "EvoNN")
   temp_path <- gsub("\\\\", "/", tempdir())
   reticulate::py_run_string(paste0("sys.argv = ['", system_path, "', '", temp_path, "', ", unique_i, "]"))
-  reticulate::py_run_file(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "eveGNN"))
+  reticulate::py_run_file(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
 
   out <- readRDS(file.path(tempdir(), paste0("empirical_gnn_2_lstm_result_", tolower(scenario), ".rds")))
 

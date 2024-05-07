@@ -162,15 +162,15 @@ def check_list_count(count, data_list, length_list, params_list, stats_list, brt
     print("Count check passed")
 
 
-def read_rds_to_pytorch(path, count, normalize=False):
+def read_rds_to_pytorch(path, count, unique_i, normalize=False):
     # List all files in the directory
-    files_tree = [f for f in os.listdir(os.path.join(path, 'GNN', 'tree'))
+    files_tree = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree'))
                   if f.startswith('tree_') and f.endswith('.rds')]
-    files_el = [f for f in os.listdir(os.path.join(path, 'GNN', 'tree', 'EL'))
+    files_el = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'EL'))
                 if f.startswith('EL_') and f.endswith('.rds')]
-    files_st = [f for f in os.listdir(os.path.join(path, 'GNN', 'tree', 'ST'))
+    files_st = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'ST'))
                 if f.startswith('ST_') and f.endswith('.rds')]
-    files_bt = [f for f in os.listdir(os.path.join(path, 'GNN', 'tree', 'BT'))
+    files_bt = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'BT'))
                 if f.startswith('BT_') and f.endswith('.rds')]  # Get the list of files in the new BT directory
 
     # Check if the files are consistent
@@ -182,7 +182,7 @@ def read_rds_to_pytorch(path, count, normalize=False):
 
     # Loop through the files with the prefix 'tree_'
     for filename in files_tree:
-        file_path = os.path.join(path, 'GNN', 'tree', filename)
+        file_path = os.path.join(path, f'GNN{unique_i}', 'tree', filename)
         result = pyreadr.read_r(file_path)
         data = result[None]
         data_list.append(data)
@@ -193,7 +193,7 @@ def read_rds_to_pytorch(path, count, normalize=False):
 
     # Loop through the files with the prefix 'EL_'
     for filename in files_el:
-        length_file_path = os.path.join(path, 'GNN', 'tree', 'EL', filename)
+        length_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'EL', filename)
         length_result = pyreadr.read_r(length_file_path)
         length_data = length_result[None]
         length_list.append(length_data)
@@ -204,7 +204,7 @@ def read_rds_to_pytorch(path, count, normalize=False):
 
     # Loop through the files with the prefix 'ST_'
     for filename in files_st:
-        stats_file_path = os.path.join(path, 'GNN', 'tree', 'ST', filename)
+        stats_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'ST', filename)
         stats_result = pyreadr.read_r(stats_file_path)
         stats_data = stats_result[None]
         stats_list.append(stats_data)
@@ -215,7 +215,7 @@ def read_rds_to_pytorch(path, count, normalize=False):
 
     # Loop through the files with the prefix 'BT_'
     for filename in files_bt:
-        brts_file_path = os.path.join(path, 'GNN', 'tree', 'BT', filename)
+        brts_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'BT', filename)
         brts_result = pyreadr.read_r(brts_file_path)
         brts_data = brts_result[None]
         brts_list.append(brts_data)
@@ -299,7 +299,7 @@ def main():
     # Check if the number of .rds files in the tree and el paths are equal
     rds_count = check_rds_files_count(full_dir_tree, full_dir_el, full_dir_st, full_dir_bt)
     # Read the .rds files into a list of PyTorch Geometric Data objects
-    current_dataset = read_rds_to_pytorch(full_dir, rds_count)
+    current_dataset = read_rds_to_pytorch(full_dir, rds_count, unique_i)
     filtered_emp_data = [data for data in current_dataset if data.edge_index.shape != torch.Size([2, 2])]
     filtered_emp_data = [data for data in filtered_emp_data if data.num_nodes <= max_nodes_limit]
     filtered_emp_data = [data for data in filtered_emp_data if data.edge_index.shape != torch.Size([2, 1])]

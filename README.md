@@ -1,5 +1,5 @@
 # How to install
-Before start, R and Python should be installed correctly. It is recommended to not alter the default settings of the installers. This package only provides R interface, although utilized both R and Python.
+Before start, the latest versions of R and Python should be installed correctly. It is recommended to not alter the default settings of the installers. This package only provides an R interface, although utilized both R and Python.
 
 **Set up R packages**
 

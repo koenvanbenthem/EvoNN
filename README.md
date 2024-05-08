@@ -60,14 +60,6 @@ library(EvoNN)
 path <- "path_to_trees"
 venv <- "path_to_virtual_environment"
 
-# Generate simulated trees for testing
-dir.create(path)
-for (i in seq_len(20)) {
-  phy <- ape::rlineage(0.4, 0.1, 10)
-  phy <- ape::drop.fossil(phy)
-  write.tree(phy, file.path(path, paste0("tree_", sample.int(1000,1))))
-}
-
 # Estimate parameters
 result <- parameter_estimation(file_path = path, 
                      venv_path = venv,

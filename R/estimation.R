@@ -85,8 +85,6 @@ write_tree_to_temp <- function(file_list, success_indexes) {
 
     tree_name <- basename(file_list[j])
     tree_name <- tools::file_path_sans_ext(tree_name)
-    message("Attempting to export the tree to temporary files")
-    print(tree_name)
 
     # Define and save RDS files
     file_name <- file.path(path, paste0("tree_{", tree_name, "}_{", scale, "}.rds"))

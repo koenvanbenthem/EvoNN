@@ -3,7 +3,7 @@ check_tree_validity <- function(file_path) {
   tryCatch({
     tree <- NULL
     tryCatch({
-      tree <- ape::read.nexus(file_path)
+      tree <- ape::read.tree(file_path)
     }, error = function(e) {
       return("Error: Not a valid tree")
     }, warning = function(w) {
@@ -77,9 +77,9 @@ write_tree_to_temp <- function(file_list, success_indexes) {
   create_dir(path_ST)
   create_dir(path_BT)
 
-  # Attempt to read the Nexus tree file
+  # Attempt to read the newick tree file
   for (j in success_indexes) {
-    tree <- ape::read.nexus(file_list[j])
+    tree <- ape::read.tree(file_list[j])
     tree <- rescale_crown_age(tree, 10)
     scale <- compute_scale(tree)
 

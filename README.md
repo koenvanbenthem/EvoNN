@@ -51,13 +51,13 @@ deactivate
 # How to use
 
 Create a folder containing all the tree files to be estimated, the trees must be in newick format. Also make sure the trees are fully bifurcated and ultrametric. A validity check will be performed on all the trees, any tree being rejected will be reported with a reason.
-Use the **path to nexus trees** and the **path to the previously created Python virtual environment** to call `parameter_estimation()`:
+Use the **path to trees** and the **path to the previously created Python virtual environment** to call `parameter_estimation()`:
 
 (In R)
 ```r
 library(EvoNN)
 
-path <- "path_to_nexus_trees"
+path <- "path_to_trees"
 venv <- "path_to_virtual_environment"
 
 # Estimate parameters

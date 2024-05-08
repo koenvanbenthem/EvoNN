@@ -56,18 +56,9 @@ Use the **path to nexus trees** and the **path to the previously created Python 
 (In R)
 ```r
 library(EvoNN)
-library(ape)
 
 path <- "path_to_nexus_trees"
 venv <- "path_to_virtual_environment"
-
-# Get some simulated trees
-dir.create(path)
-for (i in seq_len(20)) {
-  phy <- rlineage(0.4, 0.2, 10)
-  phy <- drop.fossil(phy)
-  write.tree(phy, file.path(path, paste0("tree_", sample.int(1000,1))))
-}
 
 # Estimate parameters
 result <- parameter_estimation(file_path = path, 

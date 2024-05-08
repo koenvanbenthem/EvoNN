@@ -1,7 +1,17 @@
 # How to install
-Before start, the latest versions of R and Python should be installed correctly. It is recommended to not alter the default settings of the installers. This package only provides an R interface, although utilized both R and Python.
+This package contains the example code of integrating R with pre-trained neural network models for phylogenetic tree parameter estimation. Only R interface is provided in the code, although utilized both R and Python. 
 
-**Set up R packages**
+**Step 1: R and Python**
+
+The latest versions of R and Python should be installed correctly. It is recommended to not alter the default settings of the installers. 
+
+[Click to open R official website](https://cran.r-project.org/)
+
+[Click to open Python official website](https://www.python.org/downloads/)
+
+The latest versions of Rtools and pip are also required. Rtools can be installed manually from the above website, pip is usually bundled with Python installation.
+
+**Step 2: Set up R packages**
 
 (In R)
 ```r
@@ -10,7 +20,9 @@ remotes::install_github("thijsjanzen/treestats")
 remotes::install_github("EvoLandEco/EvoNN")
 ```
 
-**Set up Python libraries**
+**Step 3: Set up Python libraries**
+
+Is is also recommended to create an independent Python virtual environment for sanity. The code implementation currently only supports virtual environment, you have to follow the steps anyway.
 
 (In Terminal or PowerShell)
 1. Create a python virtual enviroment, subsitute <...> with your own choice:
@@ -37,13 +49,27 @@ deactivate
 
 # How to use
 
-Create a folder containing all the tree files to be estimated, the trees must be in nexus format. Also make sure the trees are fully bifurcated and ultrametric. A validity check will be performed on all the trees, any tree being rejected will be reported with a reason.
+Create a folder containing all the tree files to be estimated, the trees must be in newick format. Also make sure the trees are fully bifurcated and ultrametric. A validity check will be performed on all the trees, any tree being rejected will be reported with a reason.
 Use the **path to nexus trees** and the **path to the previously created Python virtual environment** to call `parameter_estimation()`:
 
 (In R)
 ```r
 library(EvoNN)
-result <- parameter_estimation(file_path = "path_to_nexus_trees", 
-                     venv_path = "path_to_venv",
+library(ape)
+
+path <- "path_to_nexus_trees"
+venv <- "path_to_virtual_environment"
+
+# Get some simulated trees
+dir.create(path)
+for (i in seq_len(20)) {
+  phy <- rlineage(0.4, 0.2, 10)
+  phy <- drop.fossil(phy)
+  write.tree(phy, file.path(path, paste0("tree_", sample.int(1000,1))))
+}
+
+# Estimate parameters
+result <- parameter_estimation(file_path = path, 
+                     venv_path = venv,
                      scenario = "BD")
 ```

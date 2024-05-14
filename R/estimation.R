@@ -178,7 +178,6 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   }
 
   unique_i <- write_tree_to_temp(file_list, success_indexes)
-  print(unique_i)
 
   message("Tree exported")
   check_nn_model(scenario)

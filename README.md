@@ -61,6 +61,9 @@ path <- "path_to_trees"
 venv <- "path_to_virtual_environment"
 
 # Estimate parameters
+# venv_path should be the base path of the virtual environment
+# For example, if venv is created using python -m venv path_to_venv,
+# venv_path = path_to_venv
 result <- parameter_estimation(file_path = path, 
                      venv_path = venv,
                      scenario = "BD")

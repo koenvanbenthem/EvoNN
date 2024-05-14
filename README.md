@@ -28,6 +28,8 @@ Is is also recommended to create an independent Python virtual environment for s
 1. Create a python virtual enviroment, subsitute <...> with your own choice:
 ```
 python -m venv <path_to_new_virtual_environment>
+# Or the following if the above doesn't work
+python3 -m venv <path_to_new_virtual_environment>
 ```
 2. After creation, activate your virtual enviroment, subsitute <...> with your previously set path, see [here](https://docs.python.org/3/library/venv.html) for help if neither works for you. See [here](https://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts) if you encounter error when executing the command in PowerShell.
 ```

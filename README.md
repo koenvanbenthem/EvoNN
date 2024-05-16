@@ -22,7 +22,7 @@ remotes::install_github("EvoLandEco/EvoNN")
 
 **Step 3: Set up Python libraries**
 
-Is is also recommended to create an independent Python virtual environment for sanity. The code implementation currently only supports virtual environment, you have to follow the steps anyway.
+It is also recommended to create an independent Python virtual environment for sanity. The code implementation currently only supports virtual environment, you have to follow the steps anyway.
 
 (In Terminal or PowerShell)
 1. Create a python virtual enviroment, subsitute <...> with your own choice:

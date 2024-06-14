@@ -1,9 +1,5 @@
-import re
 import os
-import pandas as pd
-import pyreadr
 import torch
-import glob
 import torch_geometric.transforms as T
 import torch.nn.functional as F
 from math import ceil
@@ -38,235 +34,37 @@ model_max_node = 2147
 max_brts_len = 1073
 
 
-def check_same_across_rows(df):
-    return df.apply(lambda x: x.nunique() == 1)
-
-
-def count_rds_files(path):
-    rds_files = glob.glob(os.path.join(path, '*.rds'))
-    return len(rds_files)
-
-
-def check_rds_files_count(tree_path, el_path, st_path, bt_path):
-    tree_count = count_rds_files(tree_path)
-    el_count = count_rds_files(el_path)
-    st_count = count_rds_files(st_path)
-    bt_count = count_rds_files(bt_path)
-
-    if tree_count == el_count == st_count == bt_count:
-        return tree_count
-    else:
-        raise ValueError("The number of .rds files in the four paths are not equal")
-
-
-def list_subdirectories(path):
-    try:
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"The path {path} does not exist.")
-        if not os.path.isdir(path):
-            raise NotADirectoryError(f"The path {path} is not a directory.")
-
-        entries = os.listdir(path)
-
-        subdirectories = [entry for entry in entries if os.path.isdir(os.path.join(path, entry))]
-
-        return subdirectories
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-
-
-def get_params_string(filename):
-    if filename.endswith('.rds'):
-        filename = filename[:-4]
-
-    match = re.search(r"_\{([^}]*)\}_\{([^}]*)\}", filename)
-    if match:
-        param_string = '_'.join(match.groups())
-    else:
-        param_string = 'No valid pattern found'
-
-    return param_string
-
-
-def get_params(filename):
-    if filename.endswith('.rds'):
-        filename = filename[:-4]
-
-    match = re.search(r"_\{([^}]*)\}_\{([^}]*)\}", filename)
-    if match:
-        params_list = list(match.groups())
-    else:
-        params_list = ['No valid pattern found']
-
-    return params_list
-
-
-def check_params_consistency(params_tree_list, params_el_list, params_st_list, params_bt_list):
-    is_consistent = all(
-        a == b == c == d for a, b, c, d in zip(params_tree_list, params_el_list, params_st_list, params_bt_list))
-
-    if is_consistent:
-        print("Parameters are consistent across the tree, EL, ST, and BT datasets.")
-    else:
-        raise ValueError("Mismatch in parameters between the tree, EL, ST, and BT datasets.")
-
-    return is_consistent
-
-
-def check_file_consistency(files_tree, files_el, files_st, files_bt):
-    if not (len(files_tree) == len(files_el) == len(files_st) == len(files_bt)):
-        raise ValueError("Mismatched lengths among file lists.")
-
-    def get_params_tuple(filename):
-        return tuple(filename.split('_')[1:-1])
-
-    for tree_file, el_file, st_file, bt_file in zip(files_tree, files_el, files_st, files_bt):
-        tree_params = get_params_tuple(tree_file)
-        el_params = get_params_tuple(el_file)
-        st_params = get_params_tuple(st_file)
-        bt_params = get_params_tuple(bt_file)
-
-        if not (tree_params == el_params == st_params == bt_params):
-            raise ValueError(f"Mismatched parameters among files: {tree_file}, {el_file}, {st_file}, {bt_file}")
-
-    print("File lists consistency check passed across tree, EL, ST, and BT datasets.")
-
-
-def check_list_count(count, data_list, length_list, params_list, stats_list, brts_list):
-    data_count = len(data_list)
-    length_count = len(length_list)
-    params_count = len(params_list)
-    stats_count = len(stats_list)
-    brts_count = len(brts_list)
-
-    if count != data_count:
-        raise ValueError(f"Count mismatch: input argument count is {count}, data_list has {data_count} elements.")
-
-    if count != length_count:
-        raise ValueError(f"Count mismatch: input argument count is {count}, length_list has {length_count} elements.")
-
-    if count != params_count:
-        raise ValueError(f"Count mismatch: input argument count is {count}, params_list has {params_count} elements.")
-
-    if count != stats_count:
-        raise ValueError(f"Count mismatch: input argument count is {count}, stats_list has {stats_count} elements.")
-
-    if count != brts_count:
-        raise ValueError(f"Count mismatch: input argument count is {count}, brts_list has {brts_count} elements.")
-
-    print("Count check passed")
-
-
-def read_rds_to_pytorch(path, count, unique_i, normalize=False):
-    # List all files in the directory
-    files_tree = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree'))
-                  if f.startswith('tree_') and f.endswith('.rds')]
-    files_el = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'EL'))
-                if f.startswith('EL_') and f.endswith('.rds')]
-    files_st = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'ST'))
-                if f.startswith('ST_') and f.endswith('.rds')]
-    files_bt = [f for f in os.listdir(os.path.join(path, f'GNN{unique_i}', 'tree', 'BT'))
-                if f.startswith('BT_') and f.endswith('.rds')]  # Get the list of files in the new BT directory
-
-    # Check if the files are consistent
-    check_file_consistency(files_tree, files_el, files_st, files_bt)
-
-    # List to hold the data from each .rds file
-    data_list = []
-    params_tree_list = []
-
-    # Loop through the files with the prefix 'tree_'
-    for filename in files_tree:
-        file_path = os.path.join(path, f'GNN{unique_i}', 'tree', filename)
-        result = pyreadr.read_r(file_path)
-        data = result[None]
-        data_list.append(data)
-        params_tree_list.append(get_params_string(filename))
-
-    length_list = []
-    params_el_list = []
-
-    # Loop through the files with the prefix 'EL_'
-    for filename in files_el:
-        length_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'EL', filename)
-        length_result = pyreadr.read_r(length_file_path)
-        length_data = length_result[None]
-        length_list.append(length_data)
-        params_el_list.append(get_params_string(filename))
-
-    stats_list = []
-    params_st_list = []
-
-    # Loop through the files with the prefix 'ST_'
-    for filename in files_st:
-        stats_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'ST', filename)
-        stats_result = pyreadr.read_r(stats_file_path)
-        stats_data = stats_result[None]
-        stats_list.append(stats_data)
-        params_st_list.append(get_params_string(filename))
-
-    brts_list = []
-    params_bt_list = []
-
-    # Loop through the files with the prefix 'BT_'
-    for filename in files_bt:
-        brts_file_path = os.path.join(path, f'GNN{unique_i}', 'tree', 'BT', filename)
-        brts_result = pyreadr.read_r(brts_file_path)
-        brts_data = brts_result[None]
-        brts_list.append(brts_data)
-        params_bt_list.append(get_params_string(filename))
-
-    check_params_consistency(params_tree_list, params_el_list, params_st_list, params_bt_list)
-
-    params_list = []
-
-    for filename in files_tree:
-        params = get_params(filename)
-        params_list.append(params)
-
-    check_list_count(count, data_list, length_list, params_list, stats_list, brts_list)
-
+def create_dataset(tree_nd, tree_el, tree_st, tree_bt):
     # List to hold the Data objects
     pytorch_geometric_data_list = []
 
-    for i in range(0, count):
-        # Ensure the DataFrame is of integer type and convert to a tensor
-        edge_index_tensor = torch.tensor(data_list[i].values, dtype=torch.long)
+    # Ensure the DataFrame is of integer type and convert to a tensor
+    edge_index_tensor = torch.tensor(tree_nd, dtype=torch.long)
 
-        # Make sure the edge_index tensor is of size [2, num_edges]
-        edge_index_tensor = edge_index_tensor.t().contiguous()
+    # Make sure the edge_index tensor is of size [2, num_edges]
+    edge_index_tensor = edge_index_tensor.t().contiguous()
 
-        # Determine the number of nodes
-        num_nodes = edge_index_tensor.max().item() + 1
+    # Determine the number of nodes
+    num_nodes = edge_index_tensor.max().item() + 1
 
-        edge_length_tensor = torch.tensor(length_list[i].values, dtype=torch.float)
+    edge_length_tensor = torch.tensor(tree_el, dtype=torch.float)
 
-        params_current = params_list[i]
+    stats_tensor = torch.tensor(tree_st, dtype=torch.float)
 
-        stats_tensor = torch.tensor(stats_list[i].values, dtype=torch.float)
+    brts_tensor = torch.tensor(tree_bt, dtype=torch.float)
 
-        stats_tensor = stats_tensor.squeeze(1)  # Remove the extra dimension
+    brts_length = torch.tensor([len(tree_bt)], dtype=torch.long)
 
-        brts_tensor = torch.tensor(brts_list[i].values, dtype=torch.float)
+    # Create a Data object with the edge index, number of nodes, and category value
+    data = Data(x=edge_length_tensor,
+                edge_index=edge_index_tensor,
+                num_nodes=num_nodes,
+                stats=stats_tensor,
+                brts=brts_tensor,
+                brts_len=brts_length)
 
-        brts_tensor = brts_tensor.squeeze(1)  # Remove the extra dimension
-
-        brts_length = torch.tensor([len(brts_list[i].values)], dtype=torch.long)
-
-        # Create a Data object with the edge index, number of nodes, and category value
-        data = Data(x=edge_length_tensor,
-                    edge_index=edge_index_tensor,
-                    num_nodes=num_nodes,
-                    stats=stats_tensor,
-                    brts=brts_tensor,
-                    brts_len=brts_length,
-                    file_name=params_current[0],
-                    scale=params_current[1])
-
-        # Append the Data object to the list
-        pytorch_geometric_data_list.append(data)
+    # Append the Data object to the list
+    pytorch_geometric_data_list.append(data)
 
     # Exclude data with stat or brts == 0, as they are not ultrametric or binary trees
     filtered_data_list = [
@@ -277,32 +75,10 @@ def read_rds_to_pytorch(path, count, unique_i, normalize=False):
     return filtered_data_list
 
 
-def main():
-    model_path = sys.argv[0]
-    name = sys.argv[1]
-    unique_i = sys.argv[2]
+def estimation(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
     depth = 2
-
-    print("Applying pre-trained DiffPool + LSTM Boosting model to empirical trees...")
-
-    full_dir = os.path.join(name)
-
-    # Concatenate the base directory path with the set_i folder name
-    full_dir_tree = os.path.join(full_dir, f'GNN{unique_i}', 'tree')
-    full_dir_el = os.path.join(full_dir, f'GNN{unique_i}', 'tree', 'EL')
-    full_dir_st = os.path.join(full_dir, f'GNN{unique_i}', 'tree', 'ST')
-    full_dir_bt = os.path.join(full_dir, f'GNN{unique_i}', 'tree', 'BT')
-    # Call read_rds_to_pytorch with the full directory path
-    print(full_dir)
-    # Check if the number of .rds files in the tree and el paths are equal
-    rds_count = check_rds_files_count(full_dir_tree, full_dir_el, full_dir_st, full_dir_bt)
-    print(f'There are: {rds_count} trees in the EMP folder.')
-    print(f"Now reading the trees in EMP_DATA...")
-    # Read the .rds files into a list of PyTorch Geometric Data objects
-    current_dataset = read_rds_to_pytorch(full_dir, rds_count, unique_i)
-    filtered_emp_data = [data for data in current_dataset if data.edge_index.shape != torch.Size([2, 2])]
-    filtered_emp_data = [data for data in filtered_emp_data if data.num_nodes <= max_nodes_limit]
-    filtered_emp_data = [data for data in filtered_emp_data if data.edge_index.shape != torch.Size([2, 1])]
+    # Create dataset from imported data
+    current_dataset = create_dataset(tree_nd, tree_el, tree_st, tree_bt)
 
     class TreeData(InMemoryDataset):
         def __init__(self, root, data_list, transform=None, pre_transform=None):
@@ -323,7 +99,7 @@ def main():
         def _process(self):
             pass  # No processing required
 
-    emp_dataset = TreeData(root=None, data_list=filtered_emp_data, transform=T.ToDense(model_max_node))
+    emp_dataset = TreeData(root=None, data_list=current_dataset, transform=T.ToDense(model_max_node))
 
     class GNN(torch.nn.Module):
         def __init__(self, in_channels, hidden_channels, out_channels,
@@ -500,8 +276,6 @@ def main():
     predictions_before_lstm = torch.tensor([], dtype=torch.float, device=device)
     predictions_after_lstm = torch.tensor([], dtype=torch.float, device=device)
     num_nodes_original = torch.tensor([], dtype=torch.long, device=device)
-    file_name = []
-    scale = []
 
     with torch.no_grad():
         model_gnn.eval()
@@ -510,9 +284,6 @@ def main():
             data.to(device)
             predictions, _, _ = model_gnn(data.x, data.adj, data.mask)
             num_nodes_original = torch.cat((num_nodes_original, data.num_nodes), dim=0)
-            file_name.append(data.file_name[0])
-            new_scale = float(data.scale[0]) if isinstance(data.scale[0], str) else data.scale[0]
-            scale.append(new_scale)
             predictions_before_lstm = torch.cat((predictions_before_lstm, predictions), dim=0)
             lengths_brts = torch.sum(data.brts != 0, dim=1).cpu().tolist()
             brts_cpu = data.brts.cpu()
@@ -530,7 +301,6 @@ def main():
     emp_data_dict = {"pred_lambda": predictions_after_lstm[:, 0],
                        "pred_mu": predictions_after_lstm[:, 1],
                        "pred_cap": predictions_after_lstm[:, 2],
-                       "file_name": file_name,
                        "scale": scale,
                        "num_nodes": num_nodes_original}
 
@@ -540,24 +310,4 @@ def main():
     # Convert cap predictions to the closest integer
     emp_data_dict["pred_cap"] = emp_data_dict["pred_cap"].round()
 
-    # Rescale the predicted lambda and mu values
-    emp_data_dict["pred_lambda"] = emp_data_dict["pred_lambda"] * emp_data_dict["scale"]
-    emp_data_dict["pred_mu"] = emp_data_dict["pred_mu"] * emp_data_dict["scale"]
-
-    emp_data_df = pd.DataFrame(emp_data_dict)
-
-    # Workaround to get rid of the dtype incompatible issue
-    emp_data_df = emp_data_df.astype(object)
-
-    # Print the first few rows of the empirical data
-    print("First few rows of the result:")
-    print(emp_data_df.head())
-
-    pyreadr.write_rds(os.path.join(name, "empirical_gnn_2_lstm_result_ddd.rds"),
-                      emp_data_df)
-
-    print("Result saved successfully.")
-
-
-if __name__ == '__main__':
-    main()
+    return emp_data_dict

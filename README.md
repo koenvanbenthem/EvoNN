@@ -22,7 +22,7 @@ remotes::install_github("EvoLandEco/EvoNN")
 
 # How to use
 
-The phylogeny to be estimated must be in newick format. If not sure, read the phylogeny in R and write to files with the `write.tree()` function from package `ape`. Make sure the phylogeny is fully bifurcated and ultrametric. A validity check will be performed, in case when the phylogeny is rejected, a reason will be reported.
+The phylogeny to be estimated must be in newick format. If not sure, read the phylogeny in R and write to a file with the `write.tree()` function from package `ape`. Make sure the phylogeny is fully bifurcated and ultrametric. A validity check will be performed, in case when the phylogeny is rejected, a reason will be reported.
 
 (In R)
 ```r

@@ -110,7 +110,7 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   check_nn_model(scenario)
 
   message("Preparing Python virtual environment")
-  reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas"))
+  reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy"))
   reticulate::use_virtualenv("EvoNN")
 
   tree <- ape::read.tree(file_path)

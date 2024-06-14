@@ -37,7 +37,7 @@ result1 <- parameter_estimation(file_path = path, scenario = "BD")
 result2 <- parameter_estimation(file_path = path, scenario = "DDD")
 ```
 
-# Important Note
+# Important note
 
 The `parameter_estimation()` function will automatically set up a Python virtual environment named "EvoNN" in your home directory in its first run, this may take a while.
 

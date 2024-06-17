@@ -189,4 +189,6 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
   }
 
   results <- unlist(results)
+
+  return(results)
 }

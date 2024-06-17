@@ -147,7 +147,6 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
 
 estimate_from_simulation <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
-  message(paste0("Estimating under the ", scenario, " scenario"))
 
   reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy"))
   reticulate::use_virtualenv("EvoNN")

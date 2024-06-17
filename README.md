@@ -16,7 +16,7 @@ The latest versions of Rtools and pip are also required. Rtools can be installed
 (In R)
 ```r
 install.packages("devtools")
-remotes::install_github("thijsjanzen/treestats")
+remotes::install_github("EvoLandEco/treestats")
 remotes::install_github("EvoLandEco/EvoNN")
 ```
 

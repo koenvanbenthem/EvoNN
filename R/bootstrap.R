@@ -1,6 +1,6 @@
 #' @export estimation_bootstrap
 estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
-  if (scenario != DDD) {
+  if (scenario != "DDD") {
     stop("Only DDD is supported for boostrapping")
   }
 
@@ -15,5 +15,3 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
 
   return(results)
 }
-
-

@@ -120,7 +120,6 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   tree_name <- basename(file_path)
   tree_name <- tools::file_path_sans_ext(tree_name)
 
-  file_name <- file.path(path, paste0("tree_{", tree_name, "}_{", scale, "}.rds"))
   tree_nd <- tree_to_connectivity(tree, undirected = FALSE)
   tree_el <- tree_to_adj_mat(tree)
   tree_st <- tree_to_stats(tree)
@@ -134,7 +133,7 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   message("Tree transferred to Python")
 
   message("Estimating parameters")
-  # Simulating passing arguments
+
   system_path <- system.file("model", package = "EvoNN")
   reticulate::source_python(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
 
@@ -145,3 +144,49 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
   return(out)
 }
 
+
+estimate_from_simulation <- function(tree, scenario = "DDD") {
+  if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
+  message(paste0("Estimating under the ", scenario, " scenario"))
+
+  reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy"))
+  reticulate::use_virtualenv("EvoNN")
+
+  tree <- rescale_crown_age(tree, 10)
+  scale <- compute_scale(tree)
+
+  tree_nd <- tree_to_connectivity(tree, undirected = FALSE)
+  tree_el <- tree_to_adj_mat(tree)
+  tree_st <- tree_to_stats(tree)
+  tree_bt <- tree_to_brts(tree)
+
+  py_tree_nd <- reticulate::r_to_py(tree_nd)
+  py_tree_el <- reticulate::r_to_py(tree_el)
+  py_tree_st <- reticulate::r_to_py(tree_st)
+  py_tree_bt <- reticulate::r_to_py(tree_bt)
+  py_scale <- reticulate::r_to_py(scale)
+
+  system_path <- system.file("model", package = "EvoNN")
+  reticulate::source_python(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
+
+  out <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
+
+  return(out)
+}
+
+
+#' @export estimation_bootstrap
+estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
+  if (scenario != DDD) {
+    stop("Only DDD is supported for boostrapping")
+  }
+
+  results <- list()
+  for (i in seq_len(100)) {
+    tree <- DDD::dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)$tes
+    result <- estimate_from_simulation(tree)
+    results[[length(results) + 1]] <- result
+  }
+
+  results <- unlist(results)
+}

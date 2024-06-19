@@ -25,7 +25,7 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
       soc = 2,
       cond = 1,
       ddmodel = 1,
-      num_cycles = Inf,
+      num_cycles = 1,
       optimmethod = 'subplex'
     ))
 
@@ -38,12 +38,12 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
       soc = 2,
       cond = 1,
       ddmodel = 1,
-      num_cycles = Inf,
+      num_cycles = 1,
       optimmethod = 'subplex'
     ))
 
     message("Bootstrap iteration ", i, " completed")
-    
+
     results_NN[i, ] <- c(result_NN$pred_lambda, result_NN$pred_mu, result_NN$pred_cap)
     results_ML_Typ[i, ] <- c(result_ML_Typ$lambda, result_ML_Typ$mu, result_ML_Typ$K)
     results_ML_Opt[i, ] <- c(result_ML_Opt$lambda, result_ML_Opt$mu, result_ML_Opt$K)

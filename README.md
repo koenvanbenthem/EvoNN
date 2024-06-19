@@ -37,6 +37,10 @@ result1 <- parameter_estimation(file_path = path, scenario = "BD")
 result2 <- parameter_estimation(file_path = path, scenario = "DDD")
 ```
 
+# Known issue
+
+Error messages relating to `numpy` version or installation will appear if you run the `parameter_estimation` function for the first time. There is a simple solution: fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. The example code should work after restarting the IDE.
+
 # Important note
 
 The `parameter_estimation()` function will automatically set up a Python virtual environment named "EvoNN" in your home directory in its first run, this may take a while.

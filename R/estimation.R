@@ -145,7 +145,7 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
 }
 
 
-estimate_from_simulation <- function(tree, scenario = "DDD", n = 100) {
+estimate_from_simulation <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
 
   reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy==1.26.4"))
@@ -168,17 +168,7 @@ estimate_from_simulation <- function(tree, scenario = "DDD", n = 100) {
   system_path <- system.file("model", package = "EvoNN")
   reticulate::source_python(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
 
-  message("Estimating parameters")
-  result <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
-
-  message("Performing Monte Carlo dropout")
-  uncertainty <- data.frame(lambda = numeric(n), mu = numeric(n), cap = numeric(n), stringsAsFactors = FALSE)
-
-  for (i in seq_len(n)) {
-    uncertainty[i, ] <- reticulate::py$monte_carlo_dropout(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
-  }
-
-  out <- list(result = result, uncertainty = uncertainty)
+  out <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
 
   return(out)
 }

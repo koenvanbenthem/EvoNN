@@ -13,7 +13,7 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
     tree <- sim$tes
     brts <- sim$brts
     result_NN <- suppressMessages(estimate_from_simulation(tree))
-    result_ML_Typ <- suppressMessages(dd_ML(
+    result_ML_Typ <- suppressMessages(DDD::dd_ML(
       brts = brts,
       initparsopt = c(runif(1, 0.1, 4), runif(1, 0, 1.5), runif(1, 10, 1000)),
       idparsopt = c(1, 2, 3),
@@ -24,7 +24,7 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
       num_cycles = Inf,
       optimmethod = 'simplex'
     ))
-    result_ML_Opt <- suppressMessages(dd_ML(
+    result_ML_Opt <- suppressMessages(DDD::dd_ML(
       brts = brts,
       initparsopt = c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap),
       idparsopt = c(1, 2, 3),

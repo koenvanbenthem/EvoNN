@@ -12,7 +12,11 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
     sim <- dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)
     tree <- sim$tes
     brts <- sim$brts
+
+    message("Computing from neural network...")
     result_NN <- suppressMessages(estimate_from_simulation(tree))
+
+    message("Computing from ML with typical starting values...")
     result_ML_Typ <- suppressMessages(DDD::dd_ML(
       brts = brts,
       initparsopt = c(runif(1, 0.1, 4), runif(1, 0, 1.5), runif(1, 10, 1000)),
@@ -22,8 +26,10 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
       cond = 1,
       ddmodel = 1,
       num_cycles = Inf,
-      optimmethod = 'simplex'
+      optimmethod = 'subplex'
     ))
+
+    message("Computing from ML with optimal starting values...")
     result_ML_Opt <- suppressMessages(DDD::dd_ML(
       brts = brts,
       initparsopt = c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap),
@@ -33,16 +39,14 @@ estimation_bootstrap <- function(estimate, scenario = "DDD", n = 100) {
       cond = 1,
       ddmodel = 1,
       num_cycles = Inf,
-      optimmethod = 'simplex'
+      optimmethod = 'subplex'
     ))
 
-    message("Computing from neural network...")
-    results_NN[i, ] <- c(result$pred_lambda, result$pred_mu, result$pred_cap)
-    message("Computing from ML with typical starting values...")
-    results_ML_Typ[i, ] <- c(result_ML_Typ$lambda, result_ML_Typ$mu, result_ML_Typ$K)
-    message("Computing from ML with optimal starting values...")
-    results_ML_Opt[i, ] <- c(result_ML_Opt$lambda, result_ML_Opt$mu, result_ML_Opt$K)
     message("Bootstrap iteration ", i, " completed")
+    
+    results_NN[i, ] <- c(result_NN$pred_lambda, result_NN$pred_mu, result_NN$pred_cap)
+    results_ML_Typ[i, ] <- c(result_ML_Typ$lambda, result_ML_Typ$mu, result_ML_Typ$K)
+    results_ML_Opt[i, ] <- c(result_ML_Opt$lambda, result_ML_Opt$mu, result_ML_Opt$K)
   }
 
   out <- list(results_NN = results_NN, results_ML_Typ = results_ML_Typ, results_ML_Opt = results_ML_Opt)

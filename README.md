@@ -39,7 +39,7 @@ result2 <- parameter_estimation(file_path = path, scenario = "DDD")
 
 # Known issue
 
-Error messages relating to `numpy` version or installation will appear if you run the `parameter_estimation` function for the first time. The issue might be newly installed Python libraries not being loaded.
+Error messages relating to `numpy` version or installation could appear if you run the `parameter_estimation` function for the first time. The issue might be newly installed Python libraries not being loaded.
 
 There is a simple solution: fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. Re-run the example code, it should work this time.
 

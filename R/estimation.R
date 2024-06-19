@@ -148,7 +148,7 @@ parameter_estimation <- function(file_path = stop("Tree file path not provided")
 estimate_from_simulation <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
 
-  reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy"))
+  reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy==1.26.4"))
   reticulate::use_virtualenv("EvoNN")
 
   tree <- rescale_crown_age(tree, 10)

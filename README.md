@@ -1,8 +1,10 @@
-# EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
-
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml)
-  <!-- badges: end -->
+![GitHub Release](https://img.shields.io/github/v/release/EvoLandEco/EvoNN?include_prereleases)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+# EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
 
 ## How to install
 This package illustrates how to integrate `R` with pre-trained neural network models for phylogenetic tree parameter estimation. Only `R` interface is provided in the package, although utilized both `R` and `Python`.

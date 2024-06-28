@@ -4,8 +4,6 @@
 [![R-CMD-check](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
----
-
 ## How to install
 This package illustrates how to integrate `R` with pre-trained neural network models for phylogenetic tree parameter estimation. Only `R` interface is provided in the package, although utilized both `R` and `Python`.
 
@@ -30,13 +28,15 @@ remotes::install_github("EvoLandEco/EvoNN")
 ## How to use
 **Step 1: Prepare the phylogeny**
 
-[Click Here](https://github.com/user-attachments/files/16026922/Columbiformes.zip) to download an example phylogeny by [Valente, Luis (2019), Phylogenetic trees used for global analysis of island birds](https://data.mendeley.com/datasets/p6hm5w8s3b/2 ), unzip to your favorite path.
+[Click Here](https://github.com/user-attachments/files/16026922/Columbiformes.zip) to download an example phylogeny by [Valente et al 2020 Nature](https://data.mendeley.com/datasets/p6hm5w8s3b/2 ), unzip to your favorite path.
 ```r
 library(EvoNN)
 # Set the path to the tree file
 path <- "your_path/Columbiformes.tre"
-# Read in tree file
-test_tre <- ape::read.tree((path))
+# Read in tree file if it is in Newick format, e.g. the example phylogeny
+test_tre <- ape::read.tree(path)
+# Otherwise, use the following to read in Nexus format
+test_tre <- ape::read.nexus(path)
 ```
 **Step 2: Estimate parameters**
 

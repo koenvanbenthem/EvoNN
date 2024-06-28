@@ -1,13 +1,13 @@
-## EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
+# EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
-# How to install
-This package illustrates how to integrate `R` with pre-trained neural network models for phylogenetic tree parameter estimation. Only `R` interface is provided in the package, although utilized both `R` and `Python`. 
-
 ---
+
+## How to install
+This package illustrates how to integrate `R` with pre-trained neural network models for phylogenetic tree parameter estimation. Only `R` interface is provided in the package, although utilized both `R` and `Python`.
 
 **Step 1: Install R and Python**
 
@@ -27,7 +27,7 @@ remotes::install_github("EvoLandEco/EvoNN")
 ```
 ---
 
-# How to use
+## How to use
 **Step 1: Prepare the phylogeny**
 
 [Click Here](https://github.com/user-attachments/files/16026922/Columbiformes.zip) to download an example phylogeny by [Valente, Luis (2019), Phylogenetic trees used for global analysis of island birds](https://data.mendeley.com/datasets/p6hm5w8s3b/2 ), unzip to your favorite path.
@@ -56,12 +56,12 @@ The neural network estimates are indicated by the red dashed lines and the blue 
 ```r
 nn_plot_bootstrap(bootstrap, result, scenario = "DDD")
 ```
-![image](https://github.com/EvoLandEco/EvoNN/assets/57348932/a98d521a-63a4-47d0-84c6-ccaaed74d6ea)
+![Plot for Bootstrap Results](https://github.com/EvoLandEco/EvoNN/assets/57348932/a98d521a-63a4-47d0-84c6-ccaaed74d6ea)
 
 
 ---
 
-# Known issue
+## Known issue
 
 - Error messages relating to `numpy` version or installation could appear if you run the `parameter_estimation` function for the first time. The issue might be newly installed Python libraries not being loaded. There is a simple solution: fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. Re-run the example code, it should work this time.
 
@@ -69,7 +69,7 @@ nn_plot_bootstrap(bootstrap, result, scenario = "DDD")
 
 ---
 
-# Important note
+## Important note
 
 The `parameter_estimation()` function will automatically set up a Python virtual environment named "EvoNN" in your home directory in its first run, this may take a while.
 

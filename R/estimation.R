@@ -192,5 +192,6 @@ nn_estimate <- function(tree, scenario = "DDD") {
   message("Estimating parameters")
   out <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
 
+  message("Estimation complete")
   return(out)
 }

@@ -2,3 +2,4 @@
 .Rproj
 .idea/git_toolbox_prj.xml
 /.idea
+/empirical_bootstrap.RData

@@ -197,7 +197,7 @@ nn_estimate <- function(tree, scenario = "DDD") {
 
   check_nn_model(scenario)
 
-  if (virtualenv_exists("EvoNN")) {
+  if (reticulate::virtualenv_exists("EvoNN")) {
     reticulate::use_virtualenv("EvoNN")
   } else {
     message("Preparing Python virtual environment, this may take a while the first time the function is run...")

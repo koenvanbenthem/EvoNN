@@ -1,9 +1,13 @@
-  <!-- badges: start -->
+## EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
+
+<!-- badges: start -->
 [![R-CMD-check](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
 # How to install
 This package illustrates how to integrate `R` with pre-trained neural network models for phylogenetic tree parameter estimation. Only `R` interface is provided in the package, although utilized both `R` and `Python`. 
+
+---
 
 **Step 1: Install R and Python**
 
@@ -21,6 +25,7 @@ install.packages("devtools")
 remotes::install_github("EvoLandEco/treestats")
 remotes::install_github("EvoLandEco/EvoNN")
 ```
+---
 
 # How to use
 **Step 1: Prepare the phylogeny**
@@ -54,13 +59,15 @@ nn_plot_bootstrap(bootstrap, result, scenario = "DDD")
 ![image](https://github.com/EvoLandEco/EvoNN/assets/57348932/a98d521a-63a4-47d0-84c6-ccaaed74d6ea)
 
 
-
+---
 
 # Known issue
 
 - Error messages relating to `numpy` version or installation could appear if you run the `parameter_estimation` function for the first time. The issue might be newly installed Python libraries not being loaded. There is a simple solution: fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. Re-run the example code, it should work this time.
 
 - Mac users might have to install `cmake` to build some dependencies from source code. Run `install brew install --cask cmake` in your terminal to install it.
+
+---
 
 # Important note
 

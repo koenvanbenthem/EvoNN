@@ -137,54 +137,6 @@ compute_scale <- function(tree) {
 }
 
 
-#' @export nn_estimate_from_file
-nn_estimate_from_file <- function(file_path = stop("Tree file path not provided"),
-                                 scenario = "DDD") {
-  if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
-  message(paste0("Estimating under the ", scenario, " scenario"))
-
-  signal <- check_tree_validity_from_file(file_path)
-
-  if (signal != "SIG_SUCCESS") {
-    stop(paste0("The phylogeny provided is not valid. Reason: ", signal))
-  }
-
-  check_nn_model(scenario)
-
-  if (reticulate::virtualenv_exists("EvoNN")) {
-    reticulate::use_virtualenv("EvoNN")
-  } else {
-    message("Preparing Python virtual environment, this may take a while the first time the function is run...")
-    reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy==1.26.4"))
-    reticulate::use_virtualenv("EvoNN")
-  }
-
-  tree <- ape::read.tree(file_path)
-  tree <- rescale_crown_age(tree, 10)
-  scale <- compute_scale(tree)
-
-  tree_nd <- tree_to_connectivity(tree, undirected = FALSE)
-  tree_el <- tree_to_adj_mat(tree)
-  tree_st <- tree_to_stats(tree)
-  tree_bt <- tree_to_brts(tree)
-
-  py_tree_nd <- reticulate::r_to_py(tree_nd)
-  py_tree_el <- reticulate::r_to_py(tree_el)
-  py_tree_st <- reticulate::r_to_py(tree_st)
-  py_tree_bt <- reticulate::r_to_py(tree_bt)
-  py_scale <- reticulate::r_to_py(scale)
-  message("Tree transferred to Python")
-
-  system_path <- system.file("model", package = "EvoNN")
-  reticulate::source_python(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
-
-  message("Estimating parameters")
-  result <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
-
-  return(result)
-}
-
-
 #' @export nn_estimate
 nn_estimate <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")

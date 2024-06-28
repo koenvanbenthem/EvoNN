@@ -36,11 +36,11 @@ path <- "your_path/Columbiformes.tre"
 # Read in tree file if it is in Newick format, e.g. the example phylogeny
 test_tre <- ape::read.tree(path)
 # Otherwise, use the following to read in Nexus format
-test_tre <- ape::read.nexus(path)
+# test_tre <- ape::read.nexus(path)
 ```
 **Step 2: Estimate parameters**
 
-This step may take a while to prepare a virtual environment the first time the function is run. 
+This step may take a while to prepare a virtual environment the *first time* the function is run. *Wait for the completion message.*
 ```r
 result <- nn_estimate(test_tre, scenario = "DDD")
 ```

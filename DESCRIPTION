@@ -1,17 +1,16 @@
 Package: EvoNN
-Title: What the Package Does (One Line, Title Case)
+Title: Phylogenetic Tree Parameter Estimation by Neural Networks
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Tianjian", "Qin", , "t.qin@rug.nl", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-2540-1778"))
+Description: Functions to estimate phylogenetic tree parameters from pre-trained neural networks and bootstrap uncertainties.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports:
   ape,
-  DDD,
   reticulate,
   treestats
 URL: https://evolandeco.github.io/EvoNN/

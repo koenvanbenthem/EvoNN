@@ -1,3 +1,16 @@
+#' Function to bootstrap the uncertainty of the EvoNN estimates
+#'
+#' Generates posterior distributions of the speciation rate, extinction rate, and carrying capacity (DDD) of a
+#' phylogenetic tree by bootstrapping the tree and estimating the parameters using EvoNN
+#' @param estimate The EvoNN estimate of the speciation rate, extinction rate, and carrying capacity (DDD)
+#' @param scenario The diversification scenario: \cr \code{"BD"} : Birth-death
+#' diversification \cr \code{"DDD"} : Diversity-dependent diversification
+#' @param n The number of bootstrap iterations
+#' @param timeout The maximum time in seconds for each iteration
+#' @return \item{ results_NN }{ A data frame with the following columns: \cr
+#' \code{lambda} : Speciation rate \cr \code{mu} : Extinction rate \cr \code{cap} : Carrying capacity
+#' (Only for DDD) \cr }
+#' @author Tianjian Qin
 #' @export nn_bootstrap_uncertainty
 nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeout = 60) {
   if (scenario != "DDD") {

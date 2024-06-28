@@ -1,3 +1,13 @@
+#' Function to plot the bootstrap results of the EvoNN estimates
+#'
+#' Plots the posterior distributions of the speciation rate, extinction rate, and carrying capacity (DDD) of a
+#' phylogenetic tree estimated using EvoNN, with the original estimates
+#' @param bootstrap The bootstrap results of the EvoNN estimates
+#' @param result The EvoNN estimate of the speciation rate, extinction rate, and carrying capacity (DDD)
+#' @param scenario The diversification scenario: \cr \code{"BD"} : Birth-death
+#' diversification \cr \code{"DDD"} : Diversity-dependent diversification
+#' @return \item{ plots }{ A list of plots }
+#' @author Tianjian Qin
 #' @export nn_plot_bootstrap
 nn_plot_bootstrap <- function(bootstrap, result, scenario = "DDD") {
   if (scenario != "DDD") {

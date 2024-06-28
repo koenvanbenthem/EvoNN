@@ -136,7 +136,21 @@ compute_scale <- function(tree) {
   return(scale)
 }
 
-
+#' Function to estimate phylogenetic parameters using EvoNN
+#'
+#' Estimates the speciation rate, extinction rate, and carrying capacity (DDD) of a
+#' phylogenetic tree using the EvoNN pre-trained models
+#'
+#'
+#' @param tree A phylogenetic tree in phylo format
+#' @param scenario The diversification scenario: \cr \code{"BD"} : Birth-death
+#' diversification \cr \code{"DDD"} : Diversity-dependent diversification
+#' @return \item{ out }{ A list with the following elements: \cr
+#' \code{ pred_lambda } : Speciation rate \cr \code{ pred_mu } : Extinction rate \cr
+#' \code{ pred_cap } : Carrying capacity (Only for DDD) \cr
+#' \code{ scale } : A factor to scale the tree to the desired age (10) \cr
+#' \code{ num_nodes } : Number of nodes in the tree \cr}
+#' @author Tianjian Qin
 #' @export nn_estimate
 nn_estimate <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")

@@ -1,4 +1,3 @@
-#' @export get_all_neighbors_distances
 get_all_neighbors_distances <- function(tree) {
   # Initialize an empty list to store neighbors and edge lengths
   all_neighbors <- vector("list", ape::Nnode(tree) + ape::Ntip(tree))
@@ -29,7 +28,6 @@ get_all_neighbors_distances <- function(tree) {
 }
 
 
-#' @export tree_to_adj_mat
 tree_to_adj_mat <- function(tree, master = FALSE) {
   # Check if the tree is of class 'phylo'
   if(!inherits(tree, "phylo")) {
@@ -59,7 +57,6 @@ tree_to_adj_mat <- function(tree, master = FALSE) {
 }
 
 
-#' @export tree_to_connectivity
 tree_to_connectivity <- function(tree, undirected = FALSE, master = FALSE) {
   # Check if the tree is of class 'phylo'
   if(!inherits(tree, "phylo")) {
@@ -105,7 +102,6 @@ tree_to_connectivity <- function(tree, undirected = FALSE, master = FALSE) {
 }
 
 
-#' @export rescale_crown_age
 rescale_crown_age <- function(tree, target_crown_age) {
   # Check if the tree is of class 'phylo'
   if(!inherits(tree, "phylo")) {
@@ -126,7 +122,6 @@ rescale_crown_age <- function(tree, target_crown_age) {
 }
 
 
-#' @export tree_to_stats
 tree_to_stats <- function(tree) {
   # Check if the tree is of class 'phylo'
   if(!inherits(tree, "phylo")) {
@@ -146,7 +141,6 @@ tree_to_stats <- function(tree) {
 
 
 # TODO: Also export LTT along with branching times (I doubt this will improve the performance)
-#' @export tree_to_brts
 tree_to_brts <- function(tree) {
   # Check if the tree is of class 'phylo'
   if(!inherits(tree, "phylo")) {

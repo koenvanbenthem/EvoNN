@@ -141,7 +141,7 @@ def estimation(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
 
     # The LSTM model class with variable number of layers to process variable-length branch time sequences
     class LSTM(torch.nn.Module):
-        def __init__(self, in_channels, hidden_channels, out_channels, lstm_depth=1, dropout_rate=0.5):
+        def __init__(self, in_channels, hidden_channels, out_channels, lstm_depth=1, dropout_rate=dropout_ratio):
             super(LSTM, self).__init__()
 
             self.lstm = torch.nn.LSTM(input_size=in_channels, hidden_size=hidden_channels, num_layers=lstm_depth,
@@ -379,7 +379,7 @@ def monte_carlo_dropout(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
 
     # The LSTM model class with variable number of layers to process variable-length branch time sequences
     class LSTM(torch.nn.Module):
-        def __init__(self, in_channels, hidden_channels, out_channels, lstm_depth=1, dropout_rate=0.5):
+        def __init__(self, in_channels, hidden_channels, out_channels, lstm_depth=1, dropout_rate=dropout_ratio):
             super(LSTM, self).__init__()
 
             self.lstm = torch.nn.LSTM(input_size=in_channels, hidden_size=hidden_channels, num_layers=lstm_depth,

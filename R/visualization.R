@@ -8,6 +8,8 @@
 #' diversification \cr \code{"DDD"} : Diversity-dependent diversification
 #' @return \item{ plots }{ A list of plots }
 #' @author Tianjian Qin
+#' @importFrom graphics par plot abline text
+#' @importFrom stats density
 #' @export nn_plot_bootstrap
 nn_plot_bootstrap <- function(bootstrap, result, scenario = "DDD") {
   if (scenario != "DDD") {
@@ -24,13 +26,13 @@ nn_plot_bootstrap <- function(bootstrap, result, scenario = "DDD") {
   }
 
   plots <- par(mfrow=c(1,3))
-  plots <- plot(density(bootstrap$lambda, na.rm = T), main = "Speciation rate λ")
+  plots <- plot(density(bootstrap$lambda, na.rm = T), main = "Speciation rate")
   plots <- abline(v=result$pred_lambda, col="red",lty="dashed")
   plots <- text(result$pred_lambda,.5*par('usr')[4],labels=round(result$pred_lambda,3), col="blue")
-  plots <- plot(density(bootstrap$mu, na.rm = T), main = "Extinction rate μ")
+  plots <- plot(density(bootstrap$mu, na.rm = T), main = "Extinction rate")
   plots <- abline(v=result$pred_mu, col="red",lty="dashed")
   plots <- text(result$pred_mu,.5*par('usr')[4],labels=round(result$pred_mu,3), col="blue")
-  plots <- plot(density(bootstrap$cap, na.rm = T), main = "Carrying capacity K")
+  plots <- plot(density(bootstrap$cap, na.rm = T), main = "Carrying capacity")
   plots <- abline(v=result$pred_cap, col="red",lty="dashed")
   plots <- text(result$pred_cap,.5*par('usr')[4],labels=round(result$pred_cap,3), col="blue")
 }

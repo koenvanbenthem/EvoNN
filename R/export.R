@@ -1,3 +1,4 @@
+#' @importFrom stats setNames
 get_all_neighbors_distances <- function(tree) {
   # Initialize an empty list to store neighbors and edge lengths
   all_neighbors <- vector("list", ape::Nnode(tree) + ape::Ntip(tree))

@@ -4,7 +4,7 @@
 \alias{nn_bootstrap_uncertainty}
 \title{Function to bootstrap the uncertainty of the EvoNN estimates}
 \usage{
-nn_bootstrap_uncertainty(estimate, scenario = "DDD", n = 100, timeout = 60)
+nn_bootstrap_uncertainty(estimate, scenario = "DDD", n = 100, timeout = 30)
 }
 \arguments{
 \item{estimate}{The EvoNN estimate of the speciation rate, extinction rate, and carrying capacity (DDD)}

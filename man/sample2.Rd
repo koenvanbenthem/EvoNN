@@ -6,9 +6,26 @@
 \usage{
 sample2(x, size, replace = FALSE, prob = NULL)
 }
+\arguments{
+\item{x}{A vector of one or more elements}
+
+\item{size}{A non-negative integer giving the number of items to choose.}
+
+\item{replace}{Should sampling be with replacement?}
+
+\item{prob}{A vector of probability weights for obtaining the elements of
+the vector being sampled.}
+}
+\value{
+\item{sam}{A vector of length \code{size} that is sampled from
+\code{x}. }
+}
 \description{
-Takes samples in the usual manner
+The standard sample function in R samples from n numbers when x = n. This is
+unwanted behavior when the size of the vector to sample from changes
+dynamically. This is corrected in sample2
 }
 \author{
 Rampal S. Etienne
 }
+\keyword{models}

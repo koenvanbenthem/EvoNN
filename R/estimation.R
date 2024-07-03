@@ -49,44 +49,23 @@ check_tree_validity_from_file <- function(file_path) {
 
 
 check_tree_validity <- function(tree) {
-  # Try reading the tree from file path using ape::read.tree
-  tryCatch({
-    # Check format
-    is_phylo <- FALSE
-    if (inherits(tree, "phylo")) {
-      is_phylo <- TRUE
-    } else {
-      return("Error: Tree is not in phylo format")
-    }
+  # Check format
+  if (!inherits(tree, "phylo")) {
+    stop("Error: Tree is not in phylo format")
+  }
 
-    # Check topology
-    is_binary <- ape::is.binary(tree)
-    is_ultrametric <- ape::is.ultrametric(tree)
+  # Check topology
+  if (!ape::is.binary(tree) || !ape::is.ultrametric(tree)) {
+    stop("Error: Tree is not binary or ultrametric")
+  }
 
-    if (!is_binary || !is_ultrametric) {
-      return("Error: Tree is not binary or ultrametric")
-    }
+  # Check tree size
+  n_nodes <- 2 * tree$Nnode + 1
+  if (n_nodes < 10 || n_nodes > 2000) {
+    stop("Error: Tree size is not within the range [6, 1000]")
+  }
 
-    # Check time calibration
-    is_time_calibrated <- FALSE
-    if (!is.null(tree$edge.length)) {
-      is_time_calibrated <- TRUE
-    }
-
-    if (!is_time_calibrated) {
-      return("Error: Tree is not time calibrated")
-    }
-
-    # Check tree size
-    n_nodes <- 2 * tree$Nnode + 1
-    if (n_nodes < 10 || n_nodes > 2000) {
-      return("Error: Tree size is not within the range [10, 2000]")
-    }
-
-    return("SIG_SUCCESS")
-  }, error = function(e) {
-    return(e$message)
-  }, warning = function(w) {})
+  return("SIG_SUCCESS")
 }
 
 
@@ -165,6 +144,7 @@ nn_estimate <- function(tree, scenario = "DDD") {
 
   if (reticulate::virtualenv_exists("EvoNN")) {
     reticulate::use_virtualenv("EvoNN")
+    message("Using existing Python virtual environment: EvoNN")
   } else {
     message("Preparing Python virtual environment, this may take a while the first time the function is run...")
     reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy==1.26.4"))

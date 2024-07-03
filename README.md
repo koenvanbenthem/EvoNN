@@ -2,6 +2,7 @@
 [![R-CMD-check](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EvoLandEco/EvoNN/actions/workflows/R-CMD-check.yaml)
 ![GitHub Release](https://img.shields.io/github/v/release/EvoLandEco/EvoNN?include_prereleases)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Codecov test coverage](https://codecov.io/gh/EvoLandEco/EvoNN/branch/main/graph/badge.svg)](https://app.codecov.io/gh/EvoLandEco/EvoNN?branch=main)
 <!-- badges: end -->
 
 # EvoNN: Neural Network Parameter Estimation for Phylogenetic Trees
@@ -18,6 +19,8 @@ The latest versions of `R` and `Python` should be installed correctly. It is rec
 [Click to open Python official website](https://www.python.org/downloads/)
 
 The latest versions of `Rtools` and `pip` are also required. `Rtools` can be installed manually from the above website, `pip` is usually bundled with Python installation.
+
+
 
 **Step 2: Install R packages**
 ```r

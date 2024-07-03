@@ -12,7 +12,7 @@
 #' (Only for DDD) \cr }
 #' @author Tianjian Qin
 #' @export nn_bootstrap_uncertainty
-nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeout = 60) {
+nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeout = 30) {
   if (scenario != "DDD") {
     stop("Only DDD is supported for boostrapping")
   }
@@ -21,7 +21,7 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
 
   results_NN <- data.frame(lambda = numeric(n), mu = numeric(n), cap = numeric(n), stringsAsFactors = FALSE)
 
-  pb <- txtProgressBar(min = 0,
+  pb <- utils::txtProgressBar(min = 0,
                        max = n,
                        style = 3,
                        width = n, # Needed to avoid multiple printings
@@ -43,8 +43,10 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
         tree
       }, timeout = timeout)
     }, TimeoutException = function(ex) {
+      warning("Timeout")
       NULL
     }, error = function(e) {
+      warning(e$message)
       NULL
     })
 
@@ -56,7 +58,7 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
     }
 
     end[i] <- Sys.time()
-    setTxtProgressBar(pb,i)
+    utils::setTxtProgressBar(pb,i)
     time <- round(sum(end - init), 0)
     est <- n * (mean(end[end != 0] - init[init != 0])) - time
     remainining <- round(est, 0)

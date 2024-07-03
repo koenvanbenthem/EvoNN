@@ -13,7 +13,8 @@ Imports:
   ape,
   reticulate,
   R.utils,
-  treestats
+  treestats,
+  utils
 URL: https://evolandeco.github.io/EvoNN/
 Suggests: 
     covr,

@@ -3,7 +3,7 @@ ddd_estimation <- NULL
 
 .onLoad <- function(libname, pkgname){
   # Read package version list
-  pkglist <- read.csv(system.file("pkglist.csv", package = "EvoNN"), row.names = 1)
+  pkglist <- utils::read.csv(system.file("pkglist.csv", package = "EvoNN"), row.names = 1)
   install_list <- paste0(pkglist$package, "==", pkglist$version)
 
   # Check if the EvoNN virtual environment exists
@@ -26,14 +26,14 @@ ddd_estimation <- NULL
     }
     # Reinstall the packages if they do not match
     if (!pkgs_matched) {
-      message("Package version mismatched, resetting Python virtual environment: EvoNN, this may take a while...")
+      packageStartupMessage("Package version mismatched, resetting Python virtual environment: EvoNN, this may take a while...")
       reticulate::virtualenv_install("EvoNN", packages = mismatched_pkgs)
     } else {
-      message("Using existing Python virtual environment: EvoNN")
+      packageStartupMessage("Using existing Python virtual environment: EvoNN")
     }
   } else {
     # Create the virtual environment if it does not exist
-    message("Preparing Python virtual environment, this may take a while the first time the library is loaded...")
+    packageStartupMessage("Preparing Python virtual environment, this may take a while the first time the library is loaded...")
     reticulate::virtualenv_create("EvoNN", packages = install_list)
   }
 

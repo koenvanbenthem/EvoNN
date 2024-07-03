@@ -15,7 +15,7 @@ ddd_estimation <- NULL
     mismatched_pkgs <- character()
     for (pkg in pkglist$package) {
       if (pkg %in% current_pkgs$package) {
-        if (current_pkgs[which(current_pkgs$package==pkg),]$version != pkglist[which(current_pkgs$package==pkg),]$version) {
+        if (current_pkgs[which(current_pkgs$package==pkg),]$version != pkglist[which(pkglist$package==pkg),]$version) {
           pkgs_matched <- FALSE
           mismatched_pkgs <- c(mismatched_pkgs, paste0(pkg, "==", pkglist[which(current_pkgs$package==pkg),]$version))
         }

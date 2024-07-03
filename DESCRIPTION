@@ -11,7 +11,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports:
   ape,
-  reticulate,
+  reticulate (<= 1.36.1),
   R.utils,
   treestats
 URL: https://evolandeco.github.io/EvoNN/

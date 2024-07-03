@@ -147,7 +147,7 @@ nn_estimate <- function(tree, scenario = "DDD") {
     message("Using existing Python virtual environment: EvoNN")
   } else {
     message("Preparing Python virtual environment, this may take a while the first time the function is run...")
-    reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy==1.26.4"))
+    reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas"))
     reticulate::use_virtualenv("EvoNN")
   }
 

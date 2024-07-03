@@ -35,7 +35,23 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
     tree <- bootstrap_core(estimate, scenario, n, timeout)
 
     if (!is.null(tree)) {
-      result_NN <- reticulate::py_suppress_warnings(suppressWarnings(suppressMessages(nn_estimate(tree))))
+      tree <- rescale_crown_age(tree, 10)
+      scale <- compute_scale(tree)
+
+      tree_nd <- tree_to_connectivity(tree, undirected = FALSE)
+      tree_el <- tree_to_adj_mat(tree)
+      tree_st <- tree_to_stats(tree)
+      tree_bt <- tree_to_brts(tree)
+
+      py_tree_nd <- reticulate::r_to_py(tree_nd)
+      py_tree_el <- reticulate::r_to_py(tree_el)
+      py_tree_st <- reticulate::r_to_py(tree_st)
+      py_tree_bt <- reticulate::r_to_py(tree_bt)
+      py_scale <- reticulate::r_to_py(scale)
+
+      system_path <- system.file("model", package = "EvoNN")
+
+      result_NN <- ddd_estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
       results_NN[i, ] <- c(result_NN$pred_lambda, result_NN$pred_mu, result_NN$pred_cap)
     } else {
       results_NN[i, ] <- c(NA, NA, NA)

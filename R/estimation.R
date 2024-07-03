@@ -134,11 +134,7 @@ compute_scale <- function(tree) {
 nn_estimate <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
 
-  signal <- check_tree_validity(tree)
-
-  if (signal != "SIG_SUCCESS") {
-    stop(paste0("The phylogeny provided is not valid. Reason: ", signal))
-  }
+  check_tree_validity(tree)
 
   check_nn_model(scenario)
 
@@ -147,7 +143,7 @@ nn_estimate <- function(tree, scenario = "DDD") {
     message("Using existing Python virtual environment: EvoNN")
   } else {
     message("Preparing Python virtual environment, this may take a while the first time the function is run...")
-    reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas<2.2.2", "numpy<2"))
+    reticulate::virtualenv_create("EvoNN", packages = c("torch", "torch_geometric", "pandas", "numpy<2"))
     reticulate::use_virtualenv("EvoNN")
   }
 
@@ -167,10 +163,10 @@ nn_estimate <- function(tree, scenario = "DDD") {
   message("Tree transferred to Python")
 
   system_path <- system.file("model", package = "EvoNN")
-  reticulate::source_python(system.file(paste0("model/", tolower(scenario), "_boosting_gnn_lstm.py"), package = "EvoNN"))
 
   message("Estimating parameters")
-  out <- reticulate::py$estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
+  if (scenario == "BD") out <- bd_estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
+  if (scenario == "DDD") out <- ddd_estimation(system_path, py_tree_nd, py_tree_el, py_tree_st, py_tree_bt, py_scale)
 
   message("Estimation complete")
   return(out)

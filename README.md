@@ -33,7 +33,7 @@ remotes::install_github("EvoLandEco/EvoNN")
 ## How to use
 **Step 1: Prepare the phylogeny**
 
-[Click Here](https://github.com/user-attachments/files/16026922/Columbiformes.zip) to download an example phylogeny by [Valente et al 2020 Nature](https://data.mendeley.com/datasets/p6hm5w8s3b/2 ), unzip to your favorite path.
+[Click Here](https://github.com/user-attachments/files/16026922/Columbiformes.zip) to download an example phylogeny by [Valente et al. 2020 Nature](https://data.mendeley.com/datasets/p6hm5w8s3b/2 ), unzip to your favorite path.
 ```r
 library(EvoNN)
 # Set the path to the tree file

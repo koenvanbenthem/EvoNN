@@ -12,22 +12,22 @@ ddd_estimation <- NULL
     # Check if the virtual environment has the required versions of the packages
     current_pkgs <- reticulate::py_list_packages("EvoNN")
     pkgs_matched <- TRUE
+    mismatched_pkgs <- character()
     for (pkg in pkglist$package) {
       if (pkg %in% current_pkgs$package) {
         if (current_pkgs[which(current_pkgs$package==pkg),]$version != pkglist[which(current_pkgs$package==pkg),]$version) {
           pkgs_matched <- FALSE
-          break
+          mismatched_pkgs <- c(mismatched_pkgs, paste0(pkg, "==", pkglist[which(current_pkgs$package==pkg),]$version))
         }
       } else {
         pkgs_matched <- FALSE
-        break
+        mismatched_pkgs <- c(mismatched_pkgs, paste0(pkg, "==", pkglist[which(pkglist$package==pkg),]$version))
       }
     }
     # Reinstall the packages if they do not match
     if (!pkgs_matched) {
       message("Package version mismatched, resetting Python virtual environment: EvoNN, this may take a while...")
-      reticulate::virtualenv_remove("EvoNN", force = TRUE)
-      reticulate::virtualenv_create("EvoNN", packages = install_list)
+      reticulate::virtualenv_install("EvoNN", packages = mismatched_pkgs)
     } else {
       message("Using existing Python virtual environment: EvoNN")
     }

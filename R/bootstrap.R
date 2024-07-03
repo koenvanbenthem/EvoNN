@@ -32,23 +32,7 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
 
   for (i in seq_len(n)) {
     init[i] <- Sys.time()
-    tree <- tryCatch({
-      R.utils::withTimeout({
-        sim <- dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)
-        tree <- sim$tes
-        while ((tree$Nnode + 1) < 10) {
-          sim <- dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)
-          tree <- sim$tes
-        }
-        tree
-      }, timeout = timeout)
-    }, TimeoutException = function(ex) {
-      warning("Timeout")
-      NULL
-    }, error = function(e) {
-      warning(e$message)
-      NULL
-    })
+    tree <- bootstrap_core(estimate, scenario, n, timeout)
 
     if (!is.null(tree)) {
       result_NN <- reticulate::py_suppress_warnings(suppressWarnings(suppressMessages(nn_estimate(tree))))
@@ -69,4 +53,27 @@ nn_bootstrap_uncertainty <- function(estimate, scenario = "DDD", n = 100, timeou
   close(pb)
 
   return(results_NN)
+}
+
+
+bootstrap_core <- function(estimate, scenario, n, timeout) {
+    tree <- tryCatch({
+      R.utils::withTimeout({
+        sim <- dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)
+        tree <- sim$tes
+        while ((tree$Nnode + 1) < 10) {
+          sim <- dd_sim(c(estimate$pred_lambda, estimate$pred_mu, estimate$pred_cap), age = 10, ddmodel = 1)
+          tree <- sim$tes
+        }
+        tree
+      }, timeout = timeout)
+    }, TimeoutException = function(ex) {
+      warning("Timeout")
+      NULL
+    }, error = function(e) {
+      warning(e$message)
+      NULL
+    })
+
+  return(tree)
 }

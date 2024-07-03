@@ -4,6 +4,7 @@ ddd_estimation <- NULL
 .onLoad <- function(libname, pkgname){
   # Read package version list
   pkglist <- read.csv(system.file("pkglist.csv", package = "EvoNN"), row.names = 1)
+  install_list <- paste0(pkglist$package, "==", pkglist$version)
 
   # Check if the EvoNN virtual environment exists
   env_exists <- reticulate::virtualenv_exists("EvoNN")
@@ -11,32 +12,28 @@ ddd_estimation <- NULL
     # Check if the virtual environment has the required versions of the packages
     current_pkgs <- reticulate::py_list_packages("EvoNN")
     pkgs_matched <- TRUE
-    reinstall_list <- c()
     for (pkg in pkglist$package) {
       if (pkg %in% current_pkgs$package) {
         if (current_pkgs[which(current_pkgs$package==pkg),]$version != pkglist[which(current_pkgs$package==pkg),]$version) {
           pkgs_matched <- FALSE
-          reinstall_list <- c(reinstall_list, paste0(pkg, "==", pkglist[which(current_pkgs$package==pkg),]$version))
           break
         }
       } else {
         pkgs_matched <- FALSE
-        reinstall_list <- c(reinstall_list, paste0(pkg, "==", pkglist[which(current_pkgs$package==pkg),]$version))
         break
       }
     }
-
     # Reinstall the packages if they do not match
     if (!pkgs_matched) {
-      message("Updating Python virtual environment: EvoNN")
-      reticulate::py_install(reinstall_list, envname = "EvoNN")
+      message("Package version mismatched, resetting Python virtual environment: EvoNN, this may take a while...")
+      reticulate::virtualenv_remove("EvoNN", force = TRUE)
+      reticulate::virtualenv_create("EvoNN", packages = install_list)
     } else {
       message("Using existing Python virtual environment: EvoNN")
     }
   } else {
     # Create the virtual environment if it does not exist
-    message("Preparing Python virtual environment, this may take a while the first time the function is run...")
-    install_list <- paste0(pkglist$package, "==", pkglist$version)
+    message("Preparing Python virtual environment, this may take a while the first time the library is loaded...")
     reticulate::virtualenv_create("EvoNN", packages = install_list)
   }
 

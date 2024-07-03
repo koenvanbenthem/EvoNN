@@ -69,45 +69,6 @@ check_tree_validity <- function(tree) {
 }
 
 
-check_nn_model <- function(scenario = stop("Scenarios not specified")) {
-  if (scenario == "DDD") {
-    if (file.exists(system.file("model/DDD_FREE_TES_model_diffpool_2_gnn.pt", package = "EvoNN"))) {
-      message("Found pre-trained GNN model for DDD")
-    } else {
-      stop("Missing pre-trained GNN model for DDD")
-    }
-    if (file.exists(system.file("model/DDD_FREE_TES_gnn_2_model_lstm.pt", package = "EvoNN"))) {
-      message("Found pre-trained LSTM boosting model for DDD")
-    } else {
-      stop("Missing pre-trained LSTM boosting model for DDD")
-    }
-    if (file.exists(system.file("model/ddd_boosting_gnn_lstm.py", package = "EvoNN"))) {
-      message("Found Python script for parameter estimation")
-    } else {
-      stop("Missing Python script for parameter estimation")
-    }
-  } else if (scenario == "BD") {
-    if (file.exists(system.file("model/BD_FREE_TES_model_diffpool_2_gnn.pt", package = "EvoNN"))) {
-      message("Found pre-trained GNN model for BD")
-    } else {
-      stop("Missing pre-trained GNN model for BD")
-    }
-    if (file.exists(system.file("model/BD_FREE_TES_gnn_2_model_lstm.pt", package = "EvoNN"))) {
-      message("Found pre-trained LSTM boosting model for BD")
-    } else {
-      stop("Missing pre-trained LSTM boosting model for BD")
-    }
-    if (file.exists(system.file("model/bd_boosting_gnn_lstm.py", package = "EvoNN"))) {
-      message("Found Python script for parameter estimation")
-    } else {
-      stop("Missing Python script for parameter estimation")
-    }
-  } else {
-    stop("Invalid scenario")
-  }
-}
-
-
 compute_scale <- function(tree) {
   current_age <- treestats::crown_age(tree)
   scale <- current_age / 10
@@ -135,8 +96,6 @@ nn_estimate <- function(tree, scenario = "DDD") {
   if (!(scenario %in% c("BD", "DDD"))) stop("Invalid scenario, should be either 'BD' or 'DDD'")
 
   check_tree_validity(tree)
-
-  check_nn_model(scenario)
 
   if (reticulate::virtualenv_exists("EvoNN")) {
     reticulate::use_virtualenv("EvoNN")

@@ -1,4 +1,5 @@
 url: https://evolandeco.github.io/EvoNN/
 template:
   bootstrap: 5
+  bootswatch: minty
 

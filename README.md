@@ -12,14 +12,11 @@ This package illustrates how to integrate `R` with pre-trained neural network mo
 
 **Step 1: Install R and Python**
 
-The latest versions of `R` and `Python` should be installed correctly. It is recommended to not alter the default settings of the installers. 
+`R` (>=4.2.1) and `Python` (>=3.10) should be installed correctly. It is recommended to not alter the default settings of the installers. 
 
 [Click to open R official website](https://cran.r-project.org/)
 
 [Click to open Python official website](https://www.python.org/downloads/)
-
-The latest versions of `Rtools` and `pip` are also required. `Rtools` can be installed manually from the above website, `pip` is usually bundled with Python installation.
-
 
 
 **Step 2: Install R packages**
@@ -28,6 +25,9 @@ install.packages("devtools")
 remotes::install_github("EvoLandEco/treestats")
 remotes::install_github("EvoLandEco/EvoNN")
 ```
+
+A virtual environment "EvoNN" with necessary dependencies will also be installed in your home directory. This may take a while. *Wait for the completion message.*
+
 ---
 
 ## How to use
@@ -45,17 +45,17 @@ test_tre <- ape::read.tree(path)
 ```
 **Step 2: Estimate parameters**
 
-This step may take a while to prepare a virtual environment the *first time* the function is run. *Wait for the completion message.*
+The function estimates phylogenetic parameters from a phylo object.
 ```r
 result <- nn_estimate(test_tre, scenario = "DDD")
 ```
-**Step 3: Bootstrap the uncertainty**
+**Step 3: Bootstrap uncertainty**
 
-The execution time depends on the estimated parameters, some parameter settings may take too long or fail consistently. It is recommended to set a timeout limit, bootstrap iterations exceed the limit will return NAs.
+Some parameter settings may take too long or fail consistently. It is recommended to set a timeout limit.
 ```r
 bootstrap <- nn_bootstrap_uncertainty(result, n = 100, timeout = 30)
 ```
-**Step 4: Plot the uncertainty**
+**Step 4: Plot uncertainty**
 
 The neural network estimates are indicated by the red dashed lines and the blue values. Their uncertainties are represented by the density curves of bootstrap results.
 ```r
@@ -68,7 +68,7 @@ nn_plot_bootstrap(bootstrap, result, scenario = "DDD")
 
 ## Known issue
 
-- Error messages relating to `numpy` version or installation could appear if you run the `parameter_estimation` function for the first time. The issue might be newly installed Python libraries not being loaded. There is a simple solution: fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. Re-run the example code, it should work this time.
+- Error messages may appear when you use `library(EvoNN)` to load the package right after installation. Try to fully close your IDE (e.g. R Studio, VS Code or DataSpell, the software you use for R coding), then open it again. Re-run the example code, it should work this time.
 
 - Mac users might have to install `cmake` to build some dependencies from source code. Run `install brew install --cask cmake` in your terminal to install it.
 
@@ -76,10 +76,12 @@ nn_plot_bootstrap(bootstrap, result, scenario = "DDD")
 
 ## Important note
 
-The `parameter_estimation()` function will automatically set up a Python virtual environment named "EvoNN" in your home directory in its first run, this may take a while.
+The package will automatically set up a Python virtual environment named "EvoNN" in your home directory during installation, this may take a while. A sanity check for this virtual environment will be performed every time when `library(EvoNN)` is called. If this environment is altered, the package will try to reinstall mismatched dependencies.
 
 You can manually remove this virtual environment by running the following code in R:
 
 ```r
 reticulate::virtualenv_remove("EvoNN")
 ```
+
+After removal, the package may fail to fix the environment on load unless your fully close all R sessions and restart.

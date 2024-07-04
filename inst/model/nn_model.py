@@ -242,7 +242,6 @@ def bd_estimation(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
             return x, l1 + l2, e1 + e2
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Evaluating using {device}")
 
     # Load pre-trained GNN model state
     model_gnn = DiffPool()
@@ -539,7 +538,6 @@ def ddd_estimation(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
             return x, l1 + l2, e1 + e2
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Evaluating using {device}")
 
     # Load pre-trained GNN model state
     model_gnn = DiffPool()
@@ -777,7 +775,6 @@ def monte_carlo_dropout(model_path, tree_nd, tree_el, tree_st, tree_bt, scale):
             return x, l1 + l2, e1 + e2
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Evaluating using {device}")
 
     # Load pre-trained GNN model state
     model_gnn = DiffPool()

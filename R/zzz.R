@@ -27,14 +27,14 @@ ddd_estimation <- NULL
     # Reinstall the packages if they do not match
     if (!pkgs_matched) {
       packageStartupMessage("Package version mismatched, resetting Python virtual environment: EvoNN, this may take a while...")
-      reticulate::virtualenv_install("EvoNN", packages = mismatched_pkgs)
+      reticulate::virtualenv_install("EvoNN", packages = mismatched_pkgs, python_version = ">=3.10")
     } else {
       packageStartupMessage("Using existing Python virtual environment: EvoNN")
     }
   } else {
     # Create the virtual environment if it does not exist
     packageStartupMessage("Preparing Python virtual environment, this may take a while the first time the library is loaded...")
-    reticulate::virtualenv_create("EvoNN", packages = install_list)
+    reticulate::virtualenv_create("EvoNN", packages = install_list, version = ">=3.10")
   }
 
   # Use the EvoNN virtual environment

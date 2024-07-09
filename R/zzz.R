@@ -38,7 +38,7 @@ ddd_estimation <- NULL
   }
 
   # Use the EvoNN virtual environment
-  eval(reticulate::use_virtualenv("EvoNN"),envir = globalenv())
+  eval(parse(text='reticulate::use_virtualenv("EvoNN")'),envir = globalenv())
 
   # Import Python dependencies
   reticulate::source_python(system.file(paste0("model/", "import.py"), package = "EvoNN"))
